@@ -2,14 +2,15 @@ package token
 
 // token type
 const (
-	NAME    = "name"
-	PLUS    = "+"
-	MINUS   = "-"
-	MULTI   = "*"
-	LPARA   = "("
-	RPARA   = ")"
-	EOF     = "eof"
-	ILLEGAL = "illegal"
+	IDENT    = "identifer"
+	NUMBER   = "number"
+	PLUS     = "+"
+	MINUS    = "-"
+	ASTERISK = "*"
+	LPARA    = "("
+	RPARA    = ")"
+	EOF      = "eof"
+	ILLEGAL  = "illegal"
 )
 
 type Token struct {

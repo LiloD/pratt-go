@@ -4,11 +4,19 @@ import (
 	"pratt-go/token"
 )
 
+// define the precedence
+const (
+	_ = iota
+	Sum
+	Product
+	Prefix
+)
+
 type Expression interface {
 	String() string
 	expression() // dummy
 }
 
-type UnaryParselet func(parser *Parser, token *token.Token) (Expression, error)
+type PrefixParselet func(parser *Parser, token *token.Token) (Expression, error)
 
-type BinaryParselet func(parser *Parser, token *token.Token, left Expression) (Expression, error)
+type InfixParselet func(parser *Parser, token *token.Token, left Expression) (Expression, error)

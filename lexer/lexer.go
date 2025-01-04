@@ -16,7 +16,7 @@ func NewLexer(input string) *Lexer {
 		pos:   -1,
 	}
 
-	l.readCh() // read and init
+	l.nextCh() //fill the initial ch and pos
 	return l
 }
 
@@ -29,7 +29,7 @@ func (l *Lexer) NextToken() *token.Token {
 	case '-':
 		tok = &token.Token{Type: token.MINUS, Literal: "-"}
 	case '*':
-		tok = &token.Token{Type: token.MULTI, Literal: "*"}
+		tok = &token.Token{Type: token.ASTERISK, Literal: "*"}
 	case '(':
 		tok = &token.Token{Type: token.LPARA, Literal: "("}
 	case ')':
@@ -37,20 +37,28 @@ func (l *Lexer) NextToken() *token.Token {
 	case 0:
 		tok = &token.Token{Type: token.EOF, Literal: ""}
 	default:
-		if isDigit(l.ch) || isChar(l.ch) {
-			tok = &token.Token{Type: token.NAME, Literal: l.readName()}
+		if isChar(l.ch) {
+			tok = &token.Token{Type: token.IDENT, Literal: l.readName()}
+			return tok
+		}
+
+		if isDigit(l.ch) {
+			tok = &token.Token{Type: token.NUMBER, Literal: l.readNumber()}
 			return tok
 		}
 
 		tok = &token.Token{Type: token.ILLEGAL, Literal: string(l.ch)}
 	}
 
-	l.readCh()
+	l.nextCh()
 	return tok
 }
 
-func (l *Lexer) readCh() {
+// move the pointer and read next character
+func (l *Lexer) nextCh() {
+	// move the position pointer
 	l.pos += 1
+	// check if it's the end of the input
 	if l.pos >= len(l.input) {
 		l.ch = 0
 	} else {
@@ -58,20 +66,29 @@ func (l *Lexer) readCh() {
 	}
 }
 
-// consume whitespaces
-func (l *Lexer) whitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-		l.readCh()
-	}
-}
-
 func (l *Lexer) readName() string {
 	start := l.pos
-	for isDigit(l.ch) || isChar(l.ch) {
-		l.readCh()
+	for isChar(l.ch) {
+		l.nextCh()
 	}
 	end := l.pos
 	return l.input[start:end]
+}
+
+func (l *Lexer) readNumber() string {
+	start := l.pos
+	for isDigit(l.ch) {
+		l.nextCh()
+	}
+	end := l.pos
+	return l.input[start:end]
+}
+
+// consume whitespaces
+func (l *Lexer) whitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.nextCh()
+	}
 }
 
 func isDigit(ch byte) bool {

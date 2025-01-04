@@ -6,33 +6,35 @@ import (
 )
 
 type BinaryExpression struct {
-	tok   *token.Token
-	left  Expression
-	right Expression
+	Tok   *token.Token
+	Left  Expression
+	Right Expression
 }
 
 func (b *BinaryExpression) expression() {}
 
 func (b *BinaryExpression) String() string {
 	return fmt.Sprintf(
-		"(binary_expression %s: (left: %s, right: %s))",
-		b.tok.Literal,
-		b.left.String(),
-		b.right.String(),
+		`(binary_expression %s: left: %s, right: %s))`,
+		b.Tok.Literal,
+		b.Left.String(),
+		b.Right.String(),
 	)
 }
 
 func BinaryOperatorParselet(parser *Parser, token *token.Token, left Expression) (Expression, error) {
 	parser.ReadToken()
 	precedence := parser.getPrecedence(token.Type)
-	exp, err := parser.ParseExpression(precedence) // plus 3
+	exp, err := parser.ParseExpression(precedence)
 	if err != nil {
 		return nil, fmt.Errorf("Error parse right operand of biarny operator %s: %v", token.Literal, err)
 	}
 
-	return &BinaryExpression{
-		tok:   token,
-		left:  left,
-		right: exp,
-	}, nil
+	binaryExp := &BinaryExpression{
+		Tok:   token,
+		Left:  left,
+		Right: exp,
+	}
+
+	return binaryExp, nil
 }

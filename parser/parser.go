@@ -11,30 +11,31 @@ type Parser struct {
 	curTok  *token.Token
 	nextTok *token.Token
 
-	unaryParseletMap  map[string]UnaryParselet
-	binaryParseletMap map[string]BinaryParselet
-
-	precedence map[string]int
+	prefixParseletMap     map[string]PrefixParselet
+	infixParseletMap      map[string]InfixParselet
+	operatorPrecedenceMap map[string]int
 }
 
 func NewParser(input string) *Parser {
 	p := &Parser{
-		lexer:             lexer.NewLexer(input),
-		unaryParseletMap:  make(map[string]UnaryParselet),
-		binaryParseletMap: make(map[string]BinaryParselet),
-		precedence:        make(map[string]int),
+		lexer:                 lexer.NewLexer(input),
+		prefixParseletMap:     make(map[string]PrefixParselet),
+		infixParseletMap:      make(map[string]InfixParselet),
+		operatorPrecedenceMap: make(map[string]int),
 	}
 
-	p.unaryParseletMap[token.NAME] = UnaryOperatorParselet
-	p.unaryParseletMap[token.PLUS] = UnaryOperatorParselet
-	p.unaryParseletMap[token.MINUS] = UnaryOperatorParselet
+	p.prefixParseletMap[token.IDENT] = IdentifierParselet
+	p.prefixParseletMap[token.NUMBER] = NumberParselet
+	p.prefixParseletMap[token.PLUS] = UnaryOperatorParselet
+	p.prefixParseletMap[token.MINUS] = UnaryOperatorParselet
 
-	p.binaryParseletMap[token.PLUS] = BinaryOperatorParselet
-	p.binaryParseletMap[token.MINUS] = BinaryOperatorParselet
-	p.binaryParseletMap[token.MULTI] = BinaryOperatorParselet
+	p.infixParseletMap[token.PLUS] = BinaryOperatorParselet
+	p.infixParseletMap[token.MINUS] = BinaryOperatorParselet
+	p.infixParseletMap[token.ASTERISK] = BinaryOperatorParselet
 
-	p.precedence[token.PLUS] = 3
-	p.precedence[token.MULTI] = 4
+	p.operatorPrecedenceMap[token.PLUS] = Sum
+	p.operatorPrecedenceMap[token.MINUS] = Sum
+	p.operatorPrecedenceMap[token.ASTERISK] = Product
 
 	p.ReadToken()
 	p.ReadToken()
@@ -42,7 +43,7 @@ func NewParser(input string) *Parser {
 }
 
 func (p *Parser) getPrecedence(tokenType string) int {
-	num, ok := p.precedence[tokenType]
+	num, ok := p.operatorPrecedenceMap[tokenType]
 	if !ok {
 		return 0
 	}
@@ -54,39 +55,36 @@ func (p *Parser) ReadToken() {
 	p.nextTok = p.lexer.NextToken()
 }
 
-// from left to right!
 func (p *Parser) ParseExpression(precedence int) (Expression, error) {
-	t := p.curTok
-	fmt.Printf("tok: %s, precedence: %d\n", t.Literal, precedence)
-
-	// handle unary
-	unaryParselet, ok := p.unaryParseletMap[t.Type]
+	// parseExpression parse token from `left` to `right`
+	prefixParselet, ok := p.prefixParseletMap[p.curTok.Type]
+	// error if we don't know how parse left most token
 	if !ok {
-		return nil, fmt.Errorf("Error parse token %s", t.Type)
+		return nil, fmt.Errorf("Error parse token %s", p.curTok.Type)
 	}
 
-	exp, err := unaryParselet(p, t)
+	left, err := prefixParselet(p, p.curTok)
 	if err != nil {
 		return nil, err
 	}
 
-	// handle binary
-	left := exp
-	t = p.nextTok
-	binaryParselet, ok := p.binaryParseletMap[t.Type]
+	// after parse the first left expression
+	// peek next token to see if this is a infix expression
+	infixParselet, ok := p.infixParseletMap[p.nextTok.Type]
 	if !ok {
-		// next token is not a binary operator, return directly
-		return exp, nil
+		// if next token is not a binary operator
+		// then current expression end here, return left directly
+		return left, nil
 	}
 
-	for precedence < p.getPrecedence(p.nextTok.Type) {
+	for p.getPrecedence(p.nextTok.Type) > precedence {
 		p.ReadToken()
-		exp, err = binaryParselet(p, t, left)
+		// with each loop, left get updated
+		left, err = infixParselet(p, p.curTok, left)
 		if err != nil {
 			return nil, err
 		}
-		left = exp
 	}
 
-	return exp, nil
+	return left, nil
 }
