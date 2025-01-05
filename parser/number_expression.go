@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"pratt-go/token"
 )
 
@@ -12,7 +11,7 @@ type NumberExpression struct {
 
 // name should implement Expression
 func (n *NumberExpression) String() string {
-	return fmt.Sprintf("(number_literal: %s)", n.Number)
+	return n.Number
 }
 
 func (n *NumberExpression) expression() {}

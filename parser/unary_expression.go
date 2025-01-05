@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"pratt-go/precedence"
 	"pratt-go/token"
 )
 
@@ -14,7 +15,7 @@ func (u *UnaryExpression) expression() {}
 
 func (u *UnaryExpression) String() string {
 	return fmt.Sprintf(
-		"(unary_expression %s: (operand: %s))",
+		"(%s%s)",
 		u.Tok.Literal,
 		u.Operand.String(),
 	)
@@ -22,7 +23,7 @@ func (u *UnaryExpression) String() string {
 
 func UnaryOperatorParselet(parser *Parser, tok *token.Token) (Expression, error) {
 	parser.ReadToken()
-	exp, err := parser.ParseExpression(Prefix)
+	exp, err := parser.ParseExpression(precedence.Prefix)
 	if err != nil {
 		return nil, fmt.Errorf("Error parse operand of unary operator %s: %v", tok.Literal, err)
 	}

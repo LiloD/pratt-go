@@ -5,15 +5,35 @@ import (
 	"testing"
 )
 
-func TestParseExpression(t *testing.T) {
+func TestBinaryExpression(t *testing.T) {
 	tests := []struct {
 		name  string // description of this test case
 		input string
 		want  string
 	}{
 		{
-			input: "-a + b",
-			want:  "((-a)+b)",
+			input: "1+2+3+4",
+			want:  "(((1+2)+3)+4)",
+		},
+		{
+			input: "1*2+3",
+			want:  "((1*2)+3)",
+		},
+		{
+			input: "1+2*3",
+			want:  "(1+(2*3))",
+		},
+		{
+			input: "1+2*3+4",
+			want:  "((1+(2*3))+4)",
+		},
+		{
+			input: "-a*b",
+			want:  "((-a)*b)",
+		},
+		{
+			input: "!a*b",
+			want:  "((!a)*b)",
 		},
 	}
 	for _, tt := range tests {

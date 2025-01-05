@@ -15,9 +15,9 @@ func (b *BinaryExpression) expression() {}
 
 func (b *BinaryExpression) String() string {
 	return fmt.Sprintf(
-		`(binary_expression %s: left: %s, right: %s))`,
-		b.Tok.Literal,
+		"(%s%s%s)",
 		b.Left.String(),
+		b.Tok.Literal,
 		b.Right.String(),
 	)
 }

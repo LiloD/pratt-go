@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"pratt-go/token"
 )
 
@@ -12,7 +11,7 @@ type IdentifierExpression struct {
 
 // name should implement Expression
 func (i *IdentifierExpression) String() string {
-	return fmt.Sprintf("(identifier: %s)", i.Name)
+	return i.Name
 }
 
 func (i *IdentifierExpression) expression() {}

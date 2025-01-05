@@ -5,15 +5,31 @@ import (
 	"testing"
 )
 
-func TestParseExpression(t *testing.T) {
+func TestUnaryExpression(t *testing.T) {
 	tests := []struct {
-		name  string // description of this test case
+		name  string
 		input string
 		want  string
 	}{
 		{
+			input: "-a",
+			want:  "(-a)",
+		},
+		{
+			input: "-+a",
+			want:  "(-(+a))",
+		},
+		{
+			input: "!-+a",
+			want:  "(!(-(+a)))",
+		},
+		{
 			input: "-a + b",
 			want:  "((-a)+b)",
+		},
+		{
+			input: "-a + !b",
+			want:  "((-a)+(!b))",
 		},
 	}
 	for _, tt := range tests {

@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"pratt-go/lexer"
+	"pratt-go/precedence"
 	"pratt-go/token"
 )
 
@@ -26,16 +27,18 @@ func NewParser(input string) *Parser {
 
 	p.prefixParseletMap[token.IDENT] = IdentifierParselet
 	p.prefixParseletMap[token.NUMBER] = NumberParselet
+
 	p.prefixParseletMap[token.PLUS] = UnaryOperatorParselet
 	p.prefixParseletMap[token.MINUS] = UnaryOperatorParselet
+	p.prefixParseletMap[token.BANG] = UnaryOperatorParselet
 
 	p.infixParseletMap[token.PLUS] = BinaryOperatorParselet
 	p.infixParseletMap[token.MINUS] = BinaryOperatorParselet
 	p.infixParseletMap[token.ASTERISK] = BinaryOperatorParselet
 
-	p.operatorPrecedenceMap[token.PLUS] = Sum
-	p.operatorPrecedenceMap[token.MINUS] = Sum
-	p.operatorPrecedenceMap[token.ASTERISK] = Product
+	p.operatorPrecedenceMap[token.PLUS] = precedence.Sum
+	p.operatorPrecedenceMap[token.MINUS] = precedence.Sum
+	p.operatorPrecedenceMap[token.ASTERISK] = precedence.Product
 
 	p.ReadToken()
 	p.ReadToken()
