@@ -31,6 +31,7 @@ func NewParser(input string) *Parser {
 	p.prefixParseletMap[token.PLUS] = UnaryOperatorParselet
 	p.prefixParseletMap[token.MINUS] = UnaryOperatorParselet
 	p.prefixParseletMap[token.BANG] = UnaryOperatorParselet
+	p.prefixParseletMap[token.LPARA] = ParenthesizedParselet
 
 	p.infixParseletMap[token.PLUS] = BinaryOperatorParselet
 	p.infixParseletMap[token.MINUS] = BinaryOperatorParselet
@@ -56,6 +57,14 @@ func (p *Parser) getPrecedence(tokenType string) int {
 func (p *Parser) ReadToken() {
 	p.curTok = p.nextTok
 	p.nextTok = p.lexer.NextToken()
+}
+
+func (p *Parser) ExpectToken(tokenType string) error {
+	if p.nextTok.Type != tokenType {
+		return fmt.Errorf("Expect token %s, got %s", tokenType, p.curTok.Type)
+	}
+	p.ReadToken()
+	return nil
 }
 
 func (p *Parser) ParseExpression(precedence int) (Expression, error) {

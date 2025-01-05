@@ -2,7 +2,7 @@ package precedence
 
 // define the precedence
 const (
-	_ = iota
+	Lowest = iota
 	Sum
 	Product
 	Prefix

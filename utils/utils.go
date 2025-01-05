@@ -29,6 +29,11 @@ func printExp(exp parser.Expression, indent int) {
 		printExp(binaryExp.Left, indent+2)
 		fmt.Printf("%sright: ", whitespace(indent+2))
 		printExp(binaryExp.Right, indent+2)
+	case *parser.ParenthesizedExpression:
+		parentExp := exp.(*parser.ParenthesizedExpression)
+		fmt.Printf("parenthesized_expression\n")
+		fmt.Printf("%s", whitespace(indent+2))
+		printExp(parentExp.Child, indent+2)
 	}
 }
 

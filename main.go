@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	input := "+++a"
+	input := "a + (b + c) + d"
 	fmt.Println(input)
 	parser := parser.NewParser(input)
 	exp, err := parser.ParseExpression(0)
@@ -17,5 +17,4 @@ func main() {
 	}
 	fmt.Println(exp)
 	utils.PrintExpression(exp)
-	utils.PrintExpSimple(exp)
 }

@@ -27,7 +27,7 @@ func BinaryOperatorParselet(parser *Parser, token *token.Token, left Expression)
 	precedence := parser.getPrecedence(token.Type)
 	exp, err := parser.ParseExpression(precedence)
 	if err != nil {
-		return nil, fmt.Errorf("Error parse right operand of biarny operator %s: %v", token.Literal, err)
+		return nil, err
 	}
 
 	binaryExp := &BinaryExpression{

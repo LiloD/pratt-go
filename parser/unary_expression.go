@@ -25,7 +25,7 @@ func UnaryOperatorParselet(parser *Parser, tok *token.Token) (Expression, error)
 	parser.ReadToken()
 	exp, err := parser.ParseExpression(precedence.Prefix)
 	if err != nil {
-		return nil, fmt.Errorf("Error parse operand of unary operator %s: %v", tok.Literal, err)
+		return nil, err
 	}
 	return &UnaryExpression{
 		Tok:     tok,
