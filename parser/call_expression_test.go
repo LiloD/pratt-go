@@ -5,31 +5,35 @@ import (
 	"testing"
 )
 
-func TestParenthesizedExpression(t *testing.T) {
+func TestCallExpression(t *testing.T) {
 	tests := []struct {
-		name  string
+		name  string // description of this test case
 		input string
 		want  string
 	}{
 		{
-			input: "(a)",
-			want:  "a",
+			input: "a()",
+			want:  "a()",
 		},
 		{
-			input: "!(a+b)",
-			want:  "(!(a+b))",
+			input: "a(b)",
+			want:  "a(b)",
 		},
 		{
-			input: "(-a)",
-			want:  "(-a)",
+			input: "a(b, c)",
+			want:  "a(b,c)",
 		},
 		{
-			input: "(-a + b)",
-			want:  "((-a)+b)",
+			input: "a(b)(c)",
+			want:  "a(b)(c)",
 		},
 		{
-			input: "a + (b + c) + d",
-			want:  "((a+(b+c))+d)",
+			input: "(-foo(1, 3+4) + 4) * 5",
+			want:  "(((-foo(1,(3+4)))+4)*5)",
+		},
+		{
+			input: "a(b) + c(d)",
+			want:  "(a(b)+c(d))",
 		},
 	}
 	for _, tt := range tests {

@@ -6,4 +6,5 @@ const (
 	Sum
 	Product
 	Prefix
+	Call
 )

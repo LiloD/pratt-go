@@ -29,6 +29,16 @@ func printExp(exp parser.Expression, indent int) {
 		printExp(binaryExp.Left, indent+2)
 		fmt.Printf("%sright: ", whitespace(indent+2))
 		printExp(binaryExp.Right, indent+2)
+	case *parser.CallExpression:
+		callExp := exp.(*parser.CallExpression)
+		fmt.Printf("call_expression\n")
+		fmt.Printf("%sfunction: ", whitespace(indent+2))
+		printExp(callExp.Function, indent+2)
+		fmt.Printf("%sarguments:\n", whitespace(indent+2))
+		for _, argExp := range callExp.Arguments {
+			fmt.Printf("%s", whitespace(indent+4))
+			printExp(argExp, indent+4)
+		}
 	case *parser.ParenthesizedExpression:
 		parentExp := exp.(*parser.ParenthesizedExpression)
 		fmt.Printf("parenthesized_expression\n")

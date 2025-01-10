@@ -36,13 +36,15 @@ func NewParser(input string) *Parser {
 	p.infixParseletMap[token.PLUS] = BinaryOperatorParselet
 	p.infixParseletMap[token.MINUS] = BinaryOperatorParselet
 	p.infixParseletMap[token.ASTERISK] = BinaryOperatorParselet
+	p.infixParseletMap[token.LPARA] = CallExpressionParslet
 
 	p.operatorPrecedenceMap[token.PLUS] = precedence.Sum
 	p.operatorPrecedenceMap[token.MINUS] = precedence.Sum
 	p.operatorPrecedenceMap[token.ASTERISK] = precedence.Product
+	p.operatorPrecedenceMap[token.LPARA] = precedence.Call
 
-	p.ReadToken()
-	p.ReadToken()
+	p.NextToken()
+	p.NextToken()
 	return p
 }
 
@@ -54,16 +56,16 @@ func (p *Parser) getPrecedence(tokenType string) int {
 	return num
 }
 
-func (p *Parser) ReadToken() {
+func (p *Parser) NextToken() {
 	p.curTok = p.nextTok
 	p.nextTok = p.lexer.NextToken()
 }
 
-func (p *Parser) ExpectToken(tokenType string) error {
+func (p *Parser) ExpectNextToken(tokenType string) error {
 	if p.nextTok.Type != tokenType {
-		return fmt.Errorf("Expect token %s, got %s", tokenType, p.curTok.Type)
+		return fmt.Errorf("Expect token %s, got %s", tokenType, p.nextTok.Type)
 	}
-	p.ReadToken()
+	p.NextToken()
 	return nil
 }
 
@@ -80,17 +82,17 @@ func (p *Parser) ParseExpression(precedence int) (Expression, error) {
 		return nil, err
 	}
 
-	// after parse the first left expression
-	// peek next token to see if this is a infix expression
-	infixParselet, ok := p.infixParseletMap[p.nextTok.Type]
-	if !ok {
-		// if next token is not a binary operator
-		// then current expression end here, return left directly
-		return left, nil
-	}
-
 	for p.getPrecedence(p.nextTok.Type) > precedence {
-		p.ReadToken()
+		// after parse the first left expression
+		// peek next token to see if this is a infix expression
+		infixParselet, ok := p.infixParseletMap[p.nextTok.Type]
+		if !ok {
+			// if next token is not a binary operator
+			// then current expression end here, return left directly
+			return left, nil
+		}
+
+		p.NextToken()
 		// with each loop, left get updated
 		left, err = infixParselet(p, p.curTok, left)
 		if err != nil {

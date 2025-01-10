@@ -22,7 +22,7 @@ func (u *UnaryExpression) String() string {
 }
 
 func UnaryOperatorParselet(parser *Parser, tok *token.Token) (Expression, error) {
-	parser.ReadToken()
+	parser.NextToken()
 	exp, err := parser.ParseExpression(precedence.Prefix)
 	if err != nil {
 		return nil, err

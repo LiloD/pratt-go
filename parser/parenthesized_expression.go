@@ -16,13 +16,17 @@ func (p *ParenthesizedExpression) String() string {
 }
 
 func ParenthesizedParselet(parser *Parser, tok *token.Token) (Expression, error) {
-	parser.ReadToken()
+	// move over `(`
+	parser.NextToken()
+
+	// parse child expression with Lowest precedence
 	exp, err := parser.ParseExpression(precedence.Lowest)
 	if err != nil {
 		return nil, err
 	}
 
-	err = parser.ExpectToken(token.RPARA)
+	// must end with `)`
+	err = parser.ExpectNextToken(token.RPARA)
 	if err != nil {
 		return nil, err
 	}

@@ -26,6 +26,8 @@ func (l *Lexer) NextToken() *token.Token {
 	switch l.ch {
 	case '!':
 		tok = &token.Token{Type: token.BANG, Literal: "!"}
+	case ',':
+		tok = &token.Token{Type: token.COMMA, Literal: ","}
 	case '+':
 		tok = &token.Token{Type: token.PLUS, Literal: "+"}
 	case '-':

@@ -8,6 +8,7 @@ const (
 	MINUS    = "-"
 	ASTERISK = "*"
 	BANG     = "!"
+	COMMA    = ","
 	LPARA    = "("
 	RPARA    = ")"
 	EOF      = "eof"

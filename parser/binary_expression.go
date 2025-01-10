@@ -23,7 +23,7 @@ func (b *BinaryExpression) String() string {
 }
 
 func BinaryOperatorParselet(parser *Parser, token *token.Token, left Expression) (Expression, error) {
-	parser.ReadToken()
+	parser.NextToken()
 	precedence := parser.getPrecedence(token.Type)
 	exp, err := parser.ParseExpression(precedence)
 	if err != nil {
