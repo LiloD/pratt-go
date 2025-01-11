@@ -38,3 +38,20 @@ func BinaryOperatorParselet(parser *Parser, token *token.Token, left Expression)
 
 	return binaryExp, nil
 }
+
+func BinaryRightOperatorParselet(parser *Parser, token *token.Token, left Expression) (Expression, error) {
+	parser.NextToken()
+	precedence := parser.getPrecedence(token.Type)
+	exp, err := parser.ParseExpression(precedence - 1)
+	if err != nil {
+		return nil, err
+	}
+
+	binaryExp := &BinaryExpression{
+		Tok:   token,
+		Left:  left,
+		Right: exp,
+	}
+
+	return binaryExp, nil
+}

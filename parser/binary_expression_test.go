@@ -35,6 +35,18 @@ func TestBinaryExpression(t *testing.T) {
 			input: "!a*b",
 			want:  "((!a)*b)",
 		},
+		{
+			input: "a^b^c",
+			want:  "(a^(b^c))",
+		},
+		{
+			input: "a^(b+c)",
+			want:  "(a^(b+c))",
+		},
+		{
+			input: "b + c * d ^ e - f / g",
+			want:  "((b+(c*(d^e)))-(f/g))",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

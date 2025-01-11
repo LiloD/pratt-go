@@ -5,6 +5,7 @@ const (
 	Lowest = iota
 	Sum
 	Product
+	Exponent
 	Prefix
 	Call
 )

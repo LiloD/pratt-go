@@ -7,6 +7,8 @@ const (
 	PLUS     = "+"
 	MINUS    = "-"
 	ASTERISK = "*"
+	CARET    = "^"
+	SLASH    = "/"
 	BANG     = "!"
 	COMMA    = ","
 	LPARA    = "("

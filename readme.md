@@ -187,6 +187,7 @@ Make sure to handle 2 special cases:
 2. Call Expression with only one argument, like `foo(bar)`, since it does not need to handle `,`
 
 Some examples:
+
 `!a(c+d)`
 ```
 unary_expression(!)
@@ -213,6 +214,109 @@ binary_expression(+)
     arguments:
       identifier(bar)
 ```
+
+## Exponent Operator 
+Exponent Operator `^` is another interesting case, it's a binary infix operator, it has higher precedence than Product
+and Sum.
+
+Updated Precedence List:
+```go
+const (
+	Lowest = iota
+	Sum
+	Product
+    Exponent    // <- here!
+	Prefix
+	Call    
+)
+```
+
+But consider `2^3^2`, it first caculates `3^2 = 9`, and then `2^9 = 512`, so it has the `right association`!
+
+Remember other binary operators, for example `+` and expression `1 + 2 + 3`, we first caculate `1 + 2 = 3`, and then 
+`3 + 3 = 6`, it has the `left association`.
+
+We need to figure out how to handle the right association, and surprisely, it quite simple!
+
+For normal left associative binary operator, the parserlet looks like this, we pass the precedence of the operator to the
+parseExpression, inside the parseExpression call, it will return early if it encounter another same precedence operator, 
+which will lead to left association.
+```go
+func BinaryOperatorParselet(parser *Parser, token *token.Token, left Expression) (Expression, error) {
+	parser.NextToken()
+	precedence := parser.getPrecedence(token.Type)
+	exp, err := parser.ParseExpression(precedence)
+	if err != nil {
+		return nil, err
+	}
+
+	binaryExp := &BinaryExpression{
+		Tok:   token,
+		Left:  left,
+		Right: exp,
+	}
+
+	return binaryExp, nil
+}
+```
+
+To handle the right association, we simply lower the precedence value passed to parseExpression
+```go
+func BinaryRightOperatorParselet(parser *Parser, token *token.Token, left Expression) (Expression, error) {
+	parser.NextToken()
+	precedence := parser.getPrecedence(token.Type)
+	exp, err := parser.ParseExpression(precedence - 1) // this is the only line changed!
+	if err != nil {
+		return nil, err
+	}
+
+	binaryExp := &BinaryExpression{
+		Tok:   token,
+		Left:  left,
+		Right: exp,
+	}
+
+	return binaryExp, nil
+}
+```
+
+Oh, don't forget to register with the right associative binary parserlet
+```go
+//...
+p.infixParseletMap[token.PLUS] = BinaryOperatorParselet
+p.infixParseletMap[token.MINUS] = BinaryOperatorParselet
+p.infixParseletMap[token.ASTERISK] = BinaryOperatorParselet
+p.infixParseletMap[token.SLASH] = BinaryOperatorParselet
+
+p.infixParseletMap[token.CARET] = BinaryRightOperatorParselet // register ^ with Right Associative Parselet Function
+```
+
+Some example:
+
+`2^3^2`
+```
+binary_expression(^)
+  left: identifier(a)
+  right: binary_expression(^)
+    left: identifier(b)
+    right: identifier(c)
+```
+
+`b+c*d^e-f/g`
+```
+binary_expression(-)
+  left: binary_expression(+)
+    left: identifier(b)
+    right: binary_expression(*)
+      left: identifier(c)
+      right: binary_expression(^)
+        left: identifier(d)
+        right: identifier(e)
+  right: binary_expression(/)
+    left: identifier(f)
+    right: identifier(g)
+```
+
 
 ## Questions
 * Debug is hard
