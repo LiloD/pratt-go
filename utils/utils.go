@@ -29,6 +29,15 @@ func printExp(exp parser.Expression, indent int) {
 		printExp(binaryExp.Left, indent+2)
 		fmt.Printf("%sright: ", whitespace(indent+2))
 		printExp(binaryExp.Right, indent+2)
+	case *parser.ConditionalExpression:
+		condExp := exp.(*parser.ConditionalExpression)
+		fmt.Printf("conditional_expression\n")
+		fmt.Printf("%scondition: ", whitespace(indent+2))
+		printExp(condExp.Condition, indent+2)
+		fmt.Printf("%sconsequence: ", whitespace(indent+2))
+		printExp(condExp.Consequence, indent+2)
+		fmt.Printf("%salternative: ", whitespace(indent+2))
+		printExp(condExp.Alternative, indent+2)
 	case *parser.CallExpression:
 		callExp := exp.(*parser.CallExpression)
 		fmt.Printf("call_expression\n")

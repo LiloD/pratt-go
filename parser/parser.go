@@ -39,6 +39,7 @@ func NewParser(input string) *Parser {
 	p.infixParseletMap[token.SLASH] = BinaryOperatorParselet
 	p.infixParseletMap[token.CARET] = BinaryRightOperatorParselet
 	p.infixParseletMap[token.LPARA] = CallExpressionParslet
+	p.infixParseletMap[token.QUESTION] = ConditionalOperatorParselet
 
 	p.operatorPrecedenceMap[token.PLUS] = precedence.Sum
 	p.operatorPrecedenceMap[token.MINUS] = precedence.Sum
@@ -46,6 +47,7 @@ func NewParser(input string) *Parser {
 	p.operatorPrecedenceMap[token.SLASH] = precedence.Product
 	p.operatorPrecedenceMap[token.CARET] = precedence.Exponent
 	p.operatorPrecedenceMap[token.LPARA] = precedence.Call
+	p.operatorPrecedenceMap[token.QUESTION] = precedence.Conditional
 
 	p.NextToken()
 	p.NextToken()

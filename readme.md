@@ -318,6 +318,95 @@ binary_expression(-)
 ```
 
 
+## Conditional Expression
+Conditional Expression `a ? b : c` can be treat as a binary expression even though it is actually a Ternary Operator.
+
+The precedence should be lower than any Arithmetic operator
+
+Updated Precedence List:
+```go
+const (
+	Lowest = iota
+    Conditional     // <- here!
+	Sum
+	Product
+    Exponent    
+	Prefix
+	Call    
+)
+```
+
+And the implementation is quite straightforward:
+```go
+type ConditionalExpression struct {
+	Tok         *token.Token
+	Condition   Expression
+	Consequence Expression
+	Alternative Expression
+}
+
+func ConditionalOperatorParselet(parser *Parser, tok *token.Token, left Expression) (Expression, error) {
+	parser.NextToken()
+	// parse consequence
+	consequence, err := parser.ParseExpression(precedence.Lowest)
+	if err != nil {
+		return nil, err
+	}
+
+	// expect : and move over it
+	parser.ExpectNextToken(token.COLON)
+	parser.NextToken()
+
+	// parse alternative
+	alternative, err := parser.ParseExpression(precedence.Lowest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ConditionalExpression{
+		Condition:   left,
+		Consequence: consequence,
+		Alternative: alternative,
+	}, nil
+}
+```
+
+Some examples:
+
+`a?b:c`
+```
+conditional_expression
+  condition: identifier(a)
+  consequence: identifier(b)
+  alternative: identifier(c)
+```
+
+`a+1?b+2:c+3`
+```
+conditional_expression
+  condition: binary_expression(+)
+    left: identifier(a)
+    right: number_literal(1)
+  consequence: binary_expression(+)
+    left: identifier(b)
+    right: number_literal(2)
+  alternative: binary_expression(+)
+    left: identifier(c)
+    right: number_literal(3)
+```
+
+`a?b:c?d:e`
+```
+conditional_expression
+  condition: identifier(a)
+  consequence: identifier(b)
+  alternative: conditional_expression
+    condition: identifier(c)
+    consequence: identifier(d)
+    alternative: identifier(e)
+```
+
+
 ## Questions
 * Debug is hard
 * Review the parse expression
