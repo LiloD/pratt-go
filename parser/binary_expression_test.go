@@ -47,6 +47,22 @@ func TestBinaryExpression(t *testing.T) {
 			input: "b + c * d ^ e - f / g",
 			want:  "((b+(c*(d^e)))-(f/g))",
 		},
+		{
+			input: "a&&b",
+			want:  "(a&&b)",
+		},
+		{
+			input: "a&&b||c",
+			want:  "((a&&b)||c)",
+		},
+		{
+			input: "a&&b||c&&d",
+			want:  "((a&&b)||(c&&d))",
+		},
+		{
+			input: "a||b&&c||d",
+			want:  "((a||(b&&c))||d)",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

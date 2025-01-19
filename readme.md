@@ -406,6 +406,48 @@ conditional_expression
     alternative: identifier(e)
 ```
 
+## Logical Operator
+
+`&&` and `||` operators, easy to implement since they are ordinary binary operators, but they have lower precedence than Sum.
+
+So the updated precedence list:
+```go
+const (
+	Lowest = iota
+	Conditional
+	Or      // <- here!
+	And     // <- and here!
+	Sum
+	Product
+	Exponent
+	Prefix
+	Call
+)
+```
+
+Some exmples:
+
+`a&&b||c&&d`
+```
+binary_expression(||)
+  left: binary_expression(&&)
+    left: identifier(ja)
+    right: identifier(b)
+  right: binary_expression(&&)
+    left: identifier(c)
+    right: identifier(d)
+```
+
+`a||b&&c||d`
+```
+binary_expression(||)
+  left: binary_expression(||)
+    left: identifier(a)
+    right: binary_expression(&&)
+      left: identifier(b)
+      right: identifier(c)
+  right: identifier(d)
+```
 
 ## Questions
 * Debug is hard

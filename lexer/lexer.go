@@ -46,6 +46,18 @@ func (l *Lexer) NextToken() *token.Token {
 		tok = &token.Token{Type: token.LPARA, Literal: "("}
 	case ')':
 		tok = &token.Token{Type: token.RPARA, Literal: ")"}
+	case '&':
+		if l.expectNextCh('&') {
+			tok = &token.Token{Type: token.AND, Literal: "&&"}
+		} else {
+			tok = &token.Token{Type: token.ILLEGAL, Literal: string(l.ch)}
+		}
+	case '|':
+		if l.expectNextCh('|') {
+			tok = &token.Token{Type: token.OR, Literal: "||"}
+		} else {
+			tok = &token.Token{Type: token.ILLEGAL, Literal: string(l.ch)}
+		}
 	case 0:
 		tok = &token.Token{Type: token.EOF, Literal: ""}
 	default:
@@ -76,6 +88,12 @@ func (l *Lexer) nextCh() {
 	} else {
 		l.ch = l.input[l.pos]
 	}
+}
+
+// move the pointer and read next character
+func (l *Lexer) expectNextCh(c byte) bool {
+	l.nextCh()
+	return l.ch == c
 }
 
 func (l *Lexer) readName() string {

@@ -13,7 +13,6 @@ func TestLexer_NextToken(t *testing.T) {
 		want  []*token.Token
 	}{
 		{
-			name:  "test1",
 			input: "(12 + 123) * 999 + foo",
 			want: []*token.Token{
 				{Type: token.LPARA, Literal: "("},
@@ -25,6 +24,28 @@ func TestLexer_NextToken(t *testing.T) {
 				{Type: token.NUMBER, Literal: "999"},
 				{Type: token.PLUS, Literal: "+"},
 				{Type: token.IDENT, Literal: "foo"},
+			},
+		},
+		{
+			input: "a && b || c",
+			want: []*token.Token{
+				{Type: token.IDENT, Literal: "a"},
+				{Type: token.AND, Literal: "&&"},
+				{Type: token.IDENT, Literal: "b"},
+				{Type: token.OR, Literal: "||"},
+				{Type: token.IDENT, Literal: "c"},
+			},
+		},
+		{
+			input: "a + b || c * d",
+			want: []*token.Token{
+				{Type: token.IDENT, Literal: "a"},
+				{Type: token.PLUS, Literal: "+"},
+				{Type: token.IDENT, Literal: "b"},
+				{Type: token.OR, Literal: "||"},
+				{Type: token.IDENT, Literal: "c"},
+				{Type: token.ASTERISK, Literal: "*"},
+				{Type: token.IDENT, Literal: "d"},
 			},
 		},
 	}

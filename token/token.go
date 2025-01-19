@@ -4,6 +4,8 @@ package token
 const (
 	IDENT    = "identifer"
 	NUMBER   = "number"
+	AND      = "&&"
+	OR       = "||"
 	PLUS     = "+"
 	MINUS    = "-"
 	ASTERISK = "*"
