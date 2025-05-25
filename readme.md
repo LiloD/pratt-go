@@ -449,6 +449,3 @@ binary_expression(||)
   right: identifier(d)
 ```
 
-## Questions
-* Debug is hard
-* Review the parse expression
